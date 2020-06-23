@@ -24,9 +24,14 @@ public class TrainAvailability extends AuditableEntity {
     Integer coachTypeId;
 
     @Column(name = "journey_start_date")
-    @Temporal(TemporalType.DATE)
     Date journeyStartDate;
 
     @Column(name = "seats_available")
     Integer seatsAvailable;
+
+    @Column(name = "window_seats_available")
+    Integer windowSeatsAvailable;
+
+    @Column(name = "aisle_seats_available")
+    Integer aisleSeatsAvailable;
 }

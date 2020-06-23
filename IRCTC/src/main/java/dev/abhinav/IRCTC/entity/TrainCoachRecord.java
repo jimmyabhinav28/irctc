@@ -13,12 +13,11 @@ import javax.persistence.*;
 @Entity
 @Table(name = "train_coach")
 public class TrainCoachRecord extends AuditableEntity {
-    //no id, it is a weak entity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "train_id")
     Train train;
 

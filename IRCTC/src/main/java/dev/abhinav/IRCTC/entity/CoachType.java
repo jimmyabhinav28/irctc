@@ -16,8 +16,22 @@ public class CoachType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
-    @Column(name = "is_source")
-    Boolean isSource;
+    @Column(name = "coach_class")
+    String coachClass;
+
+    @Column(name = "total_seats")
+    Integer totalSeats;
+
+    @Column(name = "aisle_seats")
+    Integer aisleSeats;
+
+    @Column(name = "window_seats")
+    Integer windowSeats;
+
+    @Column(name = "fare_per_km")
+    Float farePerKm;
+
+
     /*
 coach_class varchar(20),
 total_seats int not null,

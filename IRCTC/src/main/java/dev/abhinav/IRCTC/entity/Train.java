@@ -32,5 +32,4 @@ public class Train extends AuditableEntity {
     @OneToMany(mappedBy = "train")
     Set<TrainCoachRecord> trainCoachRecords;
 
-
 }
