@@ -14,6 +14,10 @@ import java.util.Date;
 @Table(name = "seat_availability")
 public class TrainAvailability extends AuditableEntity {
     //another weak table here
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+
     @Column(name = "train_id")
     Long trainId;
     @Column(name = "coach_type_id")
