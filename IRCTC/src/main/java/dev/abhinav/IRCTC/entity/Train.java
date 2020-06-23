@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-@ToString
+//@ToString
 @Entity
 @Table(name = "train_details")
 public class Train extends AuditableEntity {

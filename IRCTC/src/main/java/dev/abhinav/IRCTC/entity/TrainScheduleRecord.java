@@ -7,6 +7,7 @@ import lombok.ToString;
 import javax.persistence.*;
 import java.sql.Time;
 import java.time.DayOfWeek;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -29,6 +30,10 @@ public class TrainScheduleRecord extends AuditableEntity {
     @Column(name = "stop_number")
     Integer stopNumber;
 
+    @Column(name = "source_start_day_of_week")
+    @Enumerated(EnumType.ORDINAL)
+    DayOfWeek sourceStartDayOfWeek;
+
     @Column(name = "arrival_day_of_week")
     @Enumerated(EnumType.ORDINAL)
     DayOfWeek dayOfWeek;
@@ -36,13 +41,11 @@ public class TrainScheduleRecord extends AuditableEntity {
     @Column(name = "arrival_day_from_source")
     Integer arrivalDayFromSource;
 
-    @Column(name = "arrival_day_from_source")
-    @Temporal(TemporalType.TIME)
-    Time ArrivalTime;
+    @Column(name = "arrivalTime")
+    String arrivalTime;
 
     @Column(name = "departure_time")
-    @Temporal(TemporalType.TIME)
-    Time departureTime;
+    String departureTime;
 
     @Column(name = "distance_from_source")
     Integer distanceFromSource;

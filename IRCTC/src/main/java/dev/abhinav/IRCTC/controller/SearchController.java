@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 @Slf4j
@@ -21,10 +23,12 @@ public class SearchController {
     ISearchService ISearchService;
 
     @GetMapping(path = "/search/trainsBetweenStations")
-    public TrainsBetweenStationsResponse getTrainsBetweenStations(@RequestParam(name = "sourceStationId", required = true) Long sourceStationId, @RequestParam(name = "destinationStationId", required = true) Long destinationStationId, @RequestParam(name = "journeyDate", required = true) Date journeyDate) throws SearchParametersException {
-        ISearchService.validateSearchParameters(sourceStationId, destinationStationId, journeyDate);
+    public TrainsBetweenStationsResponse getTrainsBetweenStations(@RequestParam(name = "sourceStationId", required = true) Long sourceStationId, @RequestParam(name = "destinationStationId", required = true) Long destinationStationId, @RequestParam(name = "journeyDate", required = true) String journeyDate) throws SearchParametersException {
+        DateTimeFormatter formatter=DateTimeFormatter.ofPattern("yyyy-MMM-dd");
+        LocalDate localDate=LocalDate.parse(journeyDate,formatter);
+        ISearchService.validateSearchParameters(sourceStationId, destinationStationId, localDate);
 
-        return ISearchService.findTrainsBetweenStations(sourceStationId, destinationStationId, journeyDate);
+        return ISearchService.findTrainsBetweenStations(sourceStationId, destinationStationId, localDate);
     }
 
     @GetMapping(path = "/search/trainRoute")

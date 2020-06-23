@@ -19,10 +19,10 @@ import java.util.Date;
 public class AuditableEntity {
 
     @CreatedDate
-    @Column(name = "created_date")
+    @Column(name = "created_at")
     private Date createdDate;
 
     @LastModifiedDate
-    @Column(name = "last_modified_date")
+    @Column(name = "updated_at")
     private Date lastModifiedDate;
 }

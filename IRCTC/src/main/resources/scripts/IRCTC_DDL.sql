@@ -68,8 +68,9 @@ id bigint(20) primary key not null auto_increment,
 train_id bigint(20) not null references train_details(id),
 station_id bigint(20) not null references station_details(id),
 stop_number int not null,
-arrival_day_of_week int not null,
-arrival_day_from_source int not null,
+source_start_day_of_week int not null,-- Monday, Tuesday, Wed..
+arrival_day_of_week int not null, -- Monday, Tuesday, Wed..
+arrival_day_from_source int not null,-- integer number 1,2,3
 arrival_time time not null, -- arrival time at source can be put as 0
 departure_time time not null,
 distance_from_source int not null,
