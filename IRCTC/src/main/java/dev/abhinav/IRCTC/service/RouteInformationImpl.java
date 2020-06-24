@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class RouteInformationImpl implements IRouteInformationService {
     private final ConcurrentHashMap<String, List<Train>> reachabilityCache = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String,Integer> distanceMap=new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Integer> distanceMap = new ConcurrentHashMap<>();
 
     @Autowired
     TrainScheduleRepository trainScheduleRepository;
@@ -30,49 +30,49 @@ public class RouteInformationImpl implements IRouteInformationService {
             String key = getKey(pair);
             if (reachabilityCache.containsKey(key))
                 reachabilityCache.get(key).add(pair.getTrain());
-            else
-            {
-                ArrayList<Train> trains=new ArrayList<>();
+            else {
+                ArrayList<Train> trains = new ArrayList<>();
                 trains.add(pair.getTrain());
-                reachabilityCache.put(key,trains);
+                reachabilityCache.put(key, trains);
             }
 
-            String distanceKey=getDistanceKey(pair.getSourceStationId(),pair.getDestinationStationId(),pair.getTrain().getId());
-            distanceMap.put(distanceKey,pair.getDistance());
+            String distanceKey = getDistanceKey(pair.getSourceStationId(), pair.getDestinationStationId(), pair.getTrain().getId());
+            distanceMap.put(distanceKey, pair.getDistance());
         }
     }
 
-    private String getDistanceKey(Long sourceStationId,Long destinationStationId,Long trainId) {
-        return String.valueOf(sourceStationId) + "_" + String.valueOf(destinationStationId)+"_"+String.valueOf(trainId);
+    private String getDistanceKey(Long sourceStationId, Long destinationStationId, Long trainId) {
+        return String.valueOf(sourceStationId) + "_" + String.valueOf(destinationStationId) + "_" + String.valueOf(trainId);
     }
+
     private String getKey(SourceDestinationPair pair) {
         return pair.getSourceStationId() + "_" + pair.getDestinationStationId() + "_" + pair.getTrainStartDayOfWeek().getValue();
     }
-    private String getKey(Long sourceStationId,Long destinationStationId,DayOfWeek dayOfWeek) {
-        return sourceStationId+"_"+destinationStationId+"_"+dayOfWeek.getValue();
+
+    private String getKey(Long sourceStationId, Long destinationStationId, DayOfWeek dayOfWeek) {
+        return sourceStationId + "_" + destinationStationId + "_" + dayOfWeek.getValue();
     }
 
     @Override
     public List<Train> getTrains(Long source, Long destination, DayOfWeek dayOfWeek) {
-        String key=getKey(source,destination,dayOfWeek);
+        String key = getKey(source, destination, dayOfWeek);
 //        if(reachabilityCache.isEmpty())
 //        {
 //            populateRouteAndDistanceCache();
 //        }
-        if(reachabilityCache.containsKey(key))
+        if (reachabilityCache.containsKey(key))
             return reachabilityCache.get(key);
         return null;
     }
 
     @Override
-    public Integer getDistanceBetweenTwoStation(Long sourceStationId, Long destinationStationId,Long trainId) {
-        String distanceKey=getDistanceKey(sourceStationId,destinationStationId,trainId);
+    public Integer getDistanceBetweenTwoStation(Long sourceStationId, Long destinationStationId, Long trainId) {
+        String distanceKey = getDistanceKey(sourceStationId, destinationStationId, trainId);
         return distanceMap.get(distanceKey);
     }
 
     @PostConstruct
-    public void postConstruct()
-    {
+    public void postConstruct() {
         populateRouteAndDistanceCache();
     }
 

@@ -20,6 +20,7 @@ import java.util.List;
 public class SearchServiceImpl implements ISearchService {
     @Autowired
     IRouteInformationService routeInformationService;
+
     @Override
     public void validateSearchParameters(Long sourceStationId, Long destinationStationId, LocalDate date) throws SearchParametersException {
 
@@ -28,10 +29,10 @@ public class SearchServiceImpl implements ISearchService {
     @Override
     public TrainsBetweenStationsResponse findTrainsBetweenStations(Long sourceStationId, Long destinationStationId, LocalDate date) {
 //        LocalDate localDate=convertToLocalDateViaInstant(date);
-        List<Train> trainList=routeInformationService.getTrains(sourceStationId,destinationStationId,date.getDayOfWeek());
-        TrainsBetweenStationsResponse response=new TrainsBetweenStationsResponse();
-        ArrayList<TrainDTO> trains=new ArrayList<>();
-        if(trains!=null) {
+        List<Train> trainList = routeInformationService.getTrains(sourceStationId, destinationStationId, date.getDayOfWeek());
+        TrainsBetweenStationsResponse response = new TrainsBetweenStationsResponse();
+        ArrayList<TrainDTO> trains = new ArrayList<>();
+        if (trains != null) {
             for (Train train : trainList) {
                 trains.add(new TrainDTO(train));
             }

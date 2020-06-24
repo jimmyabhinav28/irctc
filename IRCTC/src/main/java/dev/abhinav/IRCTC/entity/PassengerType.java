@@ -8,17 +8,17 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-public class PassengerType extends AuditableEntity{
+public class PassengerType extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
-    @Column(name="type_name")
+    @Column(name = "type_name")
     String typeName;
 
-    @Column(name="type_desc")
+    @Column(name = "type_desc")
     String typeDesc;
-    @Column(name="discount_percentage")
+    @Column(name = "discount_percentage")
     Float discountPercentage;
 }
 /*

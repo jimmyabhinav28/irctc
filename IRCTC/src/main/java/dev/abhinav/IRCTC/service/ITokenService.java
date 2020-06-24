@@ -6,7 +6,10 @@ import java.util.List;
 
 public interface ITokenService {
     public String getBookingToken(String userId, Long trainId, LocalDate journeyStartDate, Integer coachTypeId);
+
     public String getServiceMachineFromToken(String token);
+
     public List<BookingSetToHandle> registerMachine(String machineName);
+
     public void refreshBookingSetToHandle();
 }

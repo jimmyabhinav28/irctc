@@ -22,18 +22,18 @@ public class BookingController {
     @Autowired
     ITokenService tokenService;
 
-    @GetMapping(path="/booking/initiateBooking")
-    public BookingIntitationResponseDTO initiateBooking(@RequestParam(name="userId",required = true)String userId,@RequestParam(name="trainId",required = true)Long trainId,@RequestParam(name = "journeyDate", required = true) String journeyDate,@RequestParam(name = "coachTypeId", required = true) Integer coachTypeId)
-    {
-        DateTimeFormatter formatter=DateTimeFormatter.ofPattern("yyyy-MMM-dd");
-        LocalDate journeyStartLocalDate=LocalDate.parse(journeyDate,formatter);
-        String token=tokenService.getBookingToken(userId,trainId,journeyStartLocalDate,coachTypeId);
-        BookingIntitationResponseDTO bookingIntitationResponseDTO=new BookingIntitationResponseDTO();
+    @GetMapping(path = "/booking/initiateBooking")
+    public BookingIntitationResponseDTO initiateBooking(@RequestParam(name = "userId", required = true) String userId, @RequestParam(name = "trainId", required = true) Long trainId, @RequestParam(name = "journeyDate", required = true) String journeyDate, @RequestParam(name = "coachTypeId", required = true) Integer coachTypeId) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MMM-dd");
+        LocalDate journeyStartLocalDate = LocalDate.parse(journeyDate, formatter);
+        String token = tokenService.getBookingToken(userId, trainId, journeyStartLocalDate, coachTypeId);
+        BookingIntitationResponseDTO bookingIntitationResponseDTO = new BookingIntitationResponseDTO();
         bookingIntitationResponseDTO.setBookingInitiationToken(token);
         return bookingIntitationResponseDTO;
     }
+
     @PutMapping(path = "/booking/book")
-    public BookingResponseDTO bookTicket(@RequestHeader(name="X-forwarded-to") String bookingToken,@Valid @RequestBody BookingRequestDTO bookingRequestDTO) throws BookingException {
+    public BookingResponseDTO bookTicket(@RequestHeader(name = "X-forwarded-to") String bookingToken, @Valid @RequestBody BookingRequestDTO bookingRequestDTO) throws BookingException {
 //        DateTimeFormatter formatter=DateTimeFormatter.ofPattern("yyyy-MMM-dd");
 //        LocalDate localDate=LocalDate.parse(bookingRequestDTO.getJourneyDate(),formatter);
         BookingResponseDTO responseDTO = IBookingService.book(bookingRequestDTO);

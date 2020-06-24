@@ -8,9 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import java.time.DayOfWeek;
 import java.util.List;
 
-public interface TrainScheduleRepository extends JpaRepository<TrainScheduleRecord,Long> {
+public interface TrainScheduleRepository extends JpaRepository<TrainScheduleRecord, Long> {
     @Query(value = "select new dev.abhinav.IRCTC.dao.SourceDestinationPair(s,d) from TrainScheduleRecord s, TrainScheduleRecord d where s.train.id=d.train.id and s.stopNumber < d.stopNumber and s.sourceStartDayOfWeek=d.sourceStartDayOfWeek order by s.train.id asc, s.stopNumber asc,d.stopNumber asc")
     List<SourceDestinationPair> getAllPossibleSourceDestinationCombination();
 
-    List<TrainScheduleRecord> getAllBySourceStartDayOfWeek(DayOfWeek dayOfWeek);
+    List<TrainScheduleRecord> getDistinctBySourceStartDayOfWeek(DayOfWeek dayOfWeek);
 }

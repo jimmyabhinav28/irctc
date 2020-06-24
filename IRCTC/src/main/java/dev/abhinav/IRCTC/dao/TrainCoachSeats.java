@@ -17,11 +17,11 @@ public class TrainCoachSeats {
     Integer numberOfWindowSeats;
     Integer numberOfAisleSeats;
 
-    public TrainCoachSeats(Long trainId, String trainName, Integer coachTypeId, String coachIdentifier,String coachClass, Integer totalNumberOfSeats, Integer numberOfWindowSeats, Integer numberOfAisleSeats) {
-        this.trainId=trainId;
+    public TrainCoachSeats(Long trainId, String trainName, Integer coachTypeId, String coachIdentifier, String coachClass, Integer totalNumberOfSeats, Integer numberOfWindowSeats, Integer numberOfAisleSeats) {
+        this.trainId = trainId;
         this.trainName = trainName;
         this.coachTypeId = coachTypeId;
-        this.coachIdentifier=coachIdentifier;
+        this.coachIdentifier = coachIdentifier;
         this.coachClass = coachClass;
         this.totalNumberOfSeats = totalNumberOfSeats;
         this.numberOfWindowSeats = numberOfWindowSeats;

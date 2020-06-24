@@ -10,7 +10,6 @@ public interface IRouteInformationService {
     void populateRouteAndDistanceCache();
 
     /**
-     *
      * @param sourceStationId
      * @param destinationStationId
      * @param dayOfWeek
@@ -18,7 +17,7 @@ public interface IRouteInformationService {
      */
     public List<Train> getTrains(Long sourceStationId, Long destinationStationId, DayOfWeek dayOfWeek);
 
-    public Integer getDistanceBetweenTwoStation(Long sourceStationId, Long destinationStationId,Long trainId);
+    public Integer getDistanceBetweenTwoStation(Long sourceStationId, Long destinationStationId, Long trainId);
 }
 
 

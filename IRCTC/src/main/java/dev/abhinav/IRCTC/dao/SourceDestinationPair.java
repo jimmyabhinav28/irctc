@@ -13,16 +13,6 @@ import java.time.DayOfWeek;
 @Data
 @AllArgsConstructor
 public class SourceDestinationPair {
-    public SourceDestinationPair(TrainScheduleRecord source,TrainScheduleRecord destination)
-    {
-        this.train=source.getTrain();
-        this.trainStartDayOfWeek=source.getDayOfWeek();
-        sourceStationId=source.getStation().getId();
-        destinationStationId=destination.getStation().getId();
-        distance=destination.getDistanceFromSource()-source.getDistanceFromSource();
-        sourceStopNumber=source.getStopNumber();
-        destinationStopNumber=destination.getStopNumber();
-    }
     Train train;
     DayOfWeek trainStartDayOfWeek;
     Long sourceStationId;
@@ -30,5 +20,14 @@ public class SourceDestinationPair {
     Integer distance;
     Integer sourceStopNumber;
     Integer destinationStopNumber;
+    public SourceDestinationPair(TrainScheduleRecord source, TrainScheduleRecord destination) {
+        this.train = source.getTrain();
+        this.trainStartDayOfWeek = source.getDayOfWeek();
+        sourceStationId = source.getStation().getId();
+        destinationStationId = destination.getStation().getId();
+        distance = destination.getDistanceFromSource() - source.getDistanceFromSource();
+        sourceStopNumber = source.getStopNumber();
+        destinationStopNumber = destination.getStopNumber();
+    }
 
 }

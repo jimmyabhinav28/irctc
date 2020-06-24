@@ -18,10 +18,9 @@ public class TrainDTO {
     Long trainNumber;
     String name;
 
-    public TrainDTO(Train train)
-    {
-        this.id=train.getId();
-        this.trainNumber=train.getTrainNumber();
-        this.name=train.getName();
+    public TrainDTO(Train train) {
+        this.id = train.getId();
+        this.trainNumber = train.getTrainNumber();
+        this.name = train.getName();
     }
 }

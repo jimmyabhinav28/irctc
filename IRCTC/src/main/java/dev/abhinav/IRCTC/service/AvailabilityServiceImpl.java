@@ -21,27 +21,23 @@ import java.util.List;
 @Slf4j
 public class AvailabilityServiceImpl implements IAvailabilityService {
 
-@Value("${advance.booking.window.days}")
-Integer advanceBookingWindowDays;
-
-
-    private Integer getAdvanceBookingWindowDays()
-    {
-        if(advanceBookingWindowDays!=null)
-           return advanceBookingWindowDays;
-
-            return Constants.DEFAULT_ADVANCE_BOOKING_WINDOW;
-    }
+    @Value("${advance.booking.window.days}")
+    Integer advanceBookingWindowDays;
     @Autowired
     TrainSeatAvailabiltyRepository trainSeatAvailabiltyRepository;
-
     @Autowired
     TrainCoachRepository trainCoachRepository;
     @Autowired
     TrainScheduleRepository trainScheduleRepository;
-
     @Autowired
     TrainRepository trainRepository;
+
+    private Integer getAdvanceBookingWindowDays() {
+        if (advanceBookingWindowDays != null)
+            return advanceBookingWindowDays;
+
+        return Constants.DEFAULT_ADVANCE_BOOKING_WINDOW;
+    }
 
     @Override
     public void fillInitialAvailibility() {
@@ -54,31 +50,22 @@ Integer advanceBookingWindowDays;
         //get all trains for each day
         //for each train create an initial availability
         Date lastAvailbilityDate = trainSeatAvailabiltyRepository.getMaxAvailabilityDate();
-        if(lastAvailbilityDate==null)
-            lastAvailbilityDate=new Date();
+        if (lastAvailbilityDate == null)
+            lastAvailbilityDate = new Date();
         LocalDate lastAvailbilityLocalDate = convertToLocalDateViaInstant(lastAvailbilityDate);
         LocalDate advanceWindowCloseDate = getDaysAfter(LocalDate.now(), getAdvanceBookingWindowDays());
-        int interveningDays = getDaysIntervening(lastAvailbilityLocalDate,advanceWindowCloseDate);
+        int interveningDays = getDaysIntervening(lastAvailbilityLocalDate, advanceWindowCloseDate);
 
         for (int i = 1; i < interveningDays; i++) {
             LocalDate initialAvailabilityDate = getDaysAfter(lastAvailbilityLocalDate, i);
             DayOfWeek dayOfWeek = initialAvailabilityDate.getDayOfWeek();
-            List<TrainScheduleRecord> trainsStartingOnThisWeekday = trainScheduleRepository.getAllBySourceStartDayOfWeek(dayOfWeek);
+            List<TrainScheduleRecord> trainsStartingOnThisWeekday = trainScheduleRepository.getDistinctBySourceStartDayOfWeek(dayOfWeek);
             if (trainsStartingOnThisWeekday != null) {
                 for (TrainScheduleRecord record : trainsStartingOnThisWeekday) {
-                    List<TrainCoachRecord> trainCoachRecords=trainCoachRepository.getAllByTrain(record.getTrain());
-                    //List<TrainCoachSeats> trainCoachSeats = trainRepository.getTrainCoachSeatDetails(record.getTrain().getId());
-                    /*if (trainCoachSeats != null) {
-                        for (TrainCoachSeats tcs : trainCoachSeats) {
-                            TrainAvailability trainAvailability = convertTrainCoachSeatToTrainAvailability(tcs, initialAvailabilityDate);
-                            trainAvailabiltyRepository.save(trainAvailability);
-                        }
-                    }*/
-                    if(trainCoachRecords!=null)
-                    {
-                        for(TrainCoachRecord trainCoachRecord: trainCoachRecords)
-                        {
-                            TrainSeatAvailability trainSeatAvailability = convertTrainCoachRecordToTrainSeatAvailability(trainCoachRecord,initialAvailabilityDate);
+                    List<TrainCoachRecord> trainCoachRecords = trainCoachRepository.getAllByTrain(record.getTrain());
+                    if (trainCoachRecords != null) {
+                        for (TrainCoachRecord trainCoachRecord : trainCoachRecords) {
+                            TrainSeatAvailability trainSeatAvailability = convertTrainCoachRecordToTrainSeatAvailability(trainCoachRecord, initialAvailabilityDate);
                             trainSeatAvailabiltyRepository.save(trainSeatAvailability);
                         }
                     }
@@ -107,12 +94,10 @@ Integer advanceBookingWindowDays;
     }
 
 
-    private String getFullyAvailableSetMap()
-    {
-        char[] map=new char[Constants.MAXIMUM_AVAILABLE_SEAT_PER_COACH_IN_ANY_COACH_CLASS];
-        for(int i=0;i<Constants.MAXIMUM_AVAILABLE_SEAT_PER_COACH_IN_ANY_COACH_CLASS;i++)
-        {
-            map[i]=Constants.AVAILABLE_SEAT_MARKER_CHARACTER;
+    private String getFullyAvailableSetMap() {
+        char[] map = new char[Constants.MAXIMUM_AVAILABLE_SEAT_PER_COACH_IN_ANY_COACH_CLASS];
+        for (int i = 0; i < Constants.MAXIMUM_AVAILABLE_SEAT_PER_COACH_IN_ANY_COACH_CLASS; i++) {
+            map[i] = Constants.AVAILABLE_SEAT_MARKER_CHARACTER;
         }
         return new String(map);
     }

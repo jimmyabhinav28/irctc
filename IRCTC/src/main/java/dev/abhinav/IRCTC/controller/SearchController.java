@@ -24,8 +24,8 @@ public class SearchController {
 
     @GetMapping(path = "/search/trainsBetweenStations")
     public TrainsBetweenStationsResponse getTrainsBetweenStations(@RequestParam(name = "sourceStationId", required = true) Long sourceStationId, @RequestParam(name = "destinationStationId", required = true) Long destinationStationId, @RequestParam(name = "journeyDate", required = true) String journeyDate) throws SearchParametersException {
-        DateTimeFormatter formatter=DateTimeFormatter.ofPattern("yyyy-MMM-dd");
-        LocalDate localDate=LocalDate.parse(journeyDate,formatter);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MMM-dd");
+        LocalDate localDate = LocalDate.parse(journeyDate, formatter);
         ISearchService.validateSearchParameters(sourceStationId, destinationStationId, localDate);
 
         return ISearchService.findTrainsBetweenStations(sourceStationId, destinationStationId, localDate);
