@@ -23,7 +23,7 @@ PassengerTypeRepository passengerTypeRepository;
 CoachTypeRepository coachTypeRepository;
 
 private HashMap<Integer, PassengerType> passengerTypeCache=new HashMap<>();
-private HashMap<Integer, CoachType> coachTypeCache;
+private HashMap<Integer, CoachType> coachTypeCache=new HashMap<>();
     @Override
     public Float calculateFare(Integer coachTypeId, Long sourceStationId, Long destinationStationId, Long trainId, Integer passengerTypeId) {
     Integer distance=routeInformationService.getDistanceBetweenTwoStation(sourceStationId,destinationStationId,trainId);
@@ -38,8 +38,7 @@ private HashMap<Integer, CoachType> coachTypeCache;
     return discountedCharge;
     }
 
-    @PostConstruct
-    public void postConstruct()
+    public void populateCache()
     {
         List<CoachType> coachTypeList=coachTypeRepository.findAll();
         for(CoachType coachType:coachTypeList)
@@ -51,5 +50,10 @@ private HashMap<Integer, CoachType> coachTypeCache;
         {
             passengerTypeCache.put(passengerType.getId(),passengerType);
         }
+    }
+    @PostConstruct
+    public void postConstruct()
+    {
+        populateCache();
     }
 }

@@ -12,10 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,7 +37,7 @@ public class AllocationServiceImpl implements ISeatAllocationService{
         //create data structures to handle requests for each type booking set
         for(BookingSetToHandle bookingSet: bookingSetToHandle)
         {
-            List<TrainSeatAvailability> trainSeatAvailabilities=trainSeatAvailabiltyRepository.getAllByTrainIdAndDateAndCoachTypeId(bookingSet.getTrainId(),bookingSet.getJourneyDate(),bookingSet.getCoachTypeId());
+            List<TrainSeatAvailability> trainSeatAvailabilities=trainSeatAvailabiltyRepository.getAllByTrainIdAndJourneyStartDateAndCoachTypeId(bookingSet.getTrainId(),bookingSet.getJourneyDate(),bookingSet.getCoachTypeId());
             for(TrainSeatAvailability availability:trainSeatAvailabilities)
             {
                 createSeatFromAvailability(availability,SeatType.WINDOW);
@@ -74,7 +74,11 @@ public class AllocationServiceImpl implements ISeatAllocationService{
         return availability.getTrainId()+"_"+availability.getJourneyStartDate().toString()+"_"+availability.getCoachTypeId()+"_"+seatType.name().toLowerCase();
     }
     private String getKey(BookingRequestDTO bookingRequestDTO,BerthRequestDTO berthRequestDTO) {
-        return bookingRequestDTO.getTrainId()+"_"+bookingRequestDTO.getJourneyDate().toString()+"_"+bookingRequestDTO.getCoachTypeId()+"_"+berthRequestDTO.getSeatPreference().toLowerCase();
+        DateTimeFormatter formatter=DateTimeFormatter.ofPattern("yyyy-MMM-dd");
+        LocalDate localDate=LocalDate.parse(bookingRequestDTO.getJourneyDate(),formatter);
+        Date date=getDateFromLocalDate(localDate);
+//        return bookingRequestDTO.getTrainId()+"_"+date.toString()+"_"+bookingRequestDTO.getCoachTypeId()+"_"+berthRequestDTO.getSeatPreference().toLowerCase();
+                return bookingRequestDTO.getTrainId()+"_"+localDate.toString()+"_"+bookingRequestDTO.getCoachTypeId()+"_"+berthRequestDTO.getSeatPreference().toLowerCase();
     }
 
     @Override
@@ -86,7 +90,9 @@ public class AllocationServiceImpl implements ISeatAllocationService{
         {
             String key=getKey(bookingRequestDTO,berthRequest);
             ArrayBlockingQueue<TrainSeat> blockingQueue=seatSupply.get(key);
-            TrainSeat allocatedTrainSeat=blockingQueue.poll();
+            TrainSeat allocatedTrainSeat=null;
+            if(blockingQueue!=null)
+                allocatedTrainSeat=blockingQueue.poll();
             if(allocatedTrainSeat==null) {
                 String message=" could not fulfill request for " + berthRequest.getPassengerName() + " with berth preference " + berthRequest.getSeatPreference();
                 throw new SeatAllocationException(message);
@@ -102,10 +108,15 @@ public class AllocationServiceImpl implements ISeatAllocationService{
         responseDTO.setPnr(generatePNR());
         //calculate fare now
         responseDTO.setFare(fare);
-        
+
         //persist booking information to db
         return responseDTO;
 
+    }
+
+    private Date getDateFromLocalDate(LocalDate localDate) {
+        ZoneId defaultZoneId = ZoneId.systemDefault();
+        return Date.from(localDate.atStartOfDay(defaultZoneId).toInstant());
     }
 
     private String generatePNR()

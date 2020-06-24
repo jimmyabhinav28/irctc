@@ -5,6 +5,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -24,7 +26,7 @@ public class TrainSeatAvailability extends AuditableEntity {
     Integer coachTypeId;
 
     @Column(name = "journey_start_date")
-    Date journeyStartDate;
+    LocalDate journeyStartDate;
 
     @Column(name = "seats_available")
     Integer seatsAvailable;

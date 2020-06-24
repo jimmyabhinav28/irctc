@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 @RestController
 public class BookingController {
@@ -21,7 +23,7 @@ public class BookingController {
     ITokenService tokenService;
 
     @GetMapping(path="/booking/initiateBooking")
-    public BookingIntitationResponseDTO initiateBooking(@RequestParam(name="userId",required = true)String userId,@RequestParam(name="trainId",required = true)Long trainId,@RequestParam(name = "journeyDate", required = true) String journeyDate,@RequestParam(name = "coachTypeId", required = true) Long coachTypeId)
+    public BookingIntitationResponseDTO initiateBooking(@RequestParam(name="userId",required = true)String userId,@RequestParam(name="trainId",required = true)Long trainId,@RequestParam(name = "journeyDate", required = true) String journeyDate,@RequestParam(name = "coachTypeId", required = true) Integer coachTypeId)
     {
         DateTimeFormatter formatter=DateTimeFormatter.ofPattern("yyyy-MMM-dd");
         LocalDate journeyStartLocalDate=LocalDate.parse(journeyDate,formatter);
@@ -32,9 +34,16 @@ public class BookingController {
     }
     @PutMapping(path = "/booking/book")
     public BookingResponseDTO bookTicket(@RequestHeader(name="X-forwarded-to") String bookingToken,@Valid @RequestBody BookingRequestDTO bookingRequestDTO) throws BookingException {
+//        DateTimeFormatter formatter=DateTimeFormatter.ofPattern("yyyy-MMM-dd");
+//        LocalDate localDate=LocalDate.parse(bookingRequestDTO.getJourneyDate(),formatter);
         BookingResponseDTO responseDTO = IBookingService.book(bookingRequestDTO);
         return responseDTO;
     }
+
+//    private Date getDateFromLocalDate(LocalDate localDate) {
+//        ZoneId defaultZoneId = ZoneId.systemDefault();
+//        return Date.from(localDate.atStartOfDay(defaultZoneId).toInstant());
+//    }
 
     @PutMapping(path = "/booking/confirm")
     public BookingConfirmationResponse confirmBooking(@Valid @RequestBody BookingConfirmationRequest bookingConfirmationRequest) throws BookingException {

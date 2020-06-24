@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,10 +55,10 @@ public class RouteInformationImpl implements IRouteInformationService {
     @Override
     public List<Train> getTrains(Long source, Long destination, DayOfWeek dayOfWeek) {
         String key=getKey(source,destination,dayOfWeek);
-        if(reachabilityCache.isEmpty())
-        {
-            populateRouteAndDistanceCache();
-        }
+//        if(reachabilityCache.isEmpty())
+//        {
+//            populateRouteAndDistanceCache();
+//        }
         if(reachabilityCache.containsKey(key))
             return reachabilityCache.get(key);
         return null;
@@ -69,5 +70,10 @@ public class RouteInformationImpl implements IRouteInformationService {
         return distanceMap.get(distanceKey);
     }
 
+    @PostConstruct
+    public void postConstruct()
+    {
+        populateRouteAndDistanceCache();
+    }
 
 }

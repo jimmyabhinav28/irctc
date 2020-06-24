@@ -87,10 +87,16 @@ Integer advanceBookingWindowDays;
         }
     }
 
+    @Override
+    public List<TrainSeatAvailability> getTrainSeatAvailability(String trainId, Date trainSourceStartDate) {
+        return null;
+    }
+
     private TrainSeatAvailability convertTrainCoachRecordToTrainSeatAvailability(TrainCoachRecord trainCoachRecord, LocalDate initialAvailabilityDate) {
         TrainSeatAvailability trainSeatAvailability = new TrainSeatAvailability();
+        trainSeatAvailability.setTrainId(trainCoachRecord.getTrain().getId());
         trainSeatAvailability.setCoachTypeId(trainCoachRecord.getCoachType().getId());
-        trainSeatAvailability.setJourneyStartDate(getDateFromLocalDate(initialAvailabilityDate));
+        trainSeatAvailability.setJourneyStartDate(initialAvailabilityDate);
         trainSeatAvailability.setSeatsAvailable(trainCoachRecord.getCoachType().getTotalSeats());
         trainSeatAvailability.setAisleSeatsAvailable(trainCoachRecord.getCoachType().getAisleSeats());
         trainSeatAvailability.setAisleSeatsBookingMap(getFullyAvailableSetMap());
@@ -110,15 +116,6 @@ Integer advanceBookingWindowDays;
         }
         return new String(map);
     }
-   /* private TrainAvailability convertTrainCoachSeatToTrainAvailability(TrainCoachSeats tcs, LocalDate initialAvailabilityDate) {
-        TrainAvailability trainAvailability = new TrainAvailability();
-        trainAvailability.setCoachTypeId(tcs.getCoachTypeId());
-        trainAvailability.setJourneyStartDate(getDateFromLocalDate(initialAvailabilityDate));
-        trainAvailability.setSeatsAvailable(Integer.valueOf(tcs.getTotalNumberOfSeats().toString()));
-        trainAvailability.setAisleSeatsAvailable(Integer.valueOf(tcs.getNumberOfAisleSeats().toString()));
-        trainAvailability.setWindowSeatsAvailable(Integer.valueOf(tcs.getNumberOfWindowSeats().toString()));
-        return trainAvailability;
-    }*/
 
     private Date getDateFromLocalDate(LocalDate localDate) {
         ZoneId defaultZoneId = ZoneId.systemDefault();

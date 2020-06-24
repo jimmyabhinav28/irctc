@@ -1,45 +1,102 @@
 package dev.abhinav.IRCTC.service;
 
+import dev.abhinav.IRCTC.Constants;
+import dev.abhinav.IRCTC.dao.TrainSeatAvailabiltyRepository;
+import dev.abhinav.IRCTC.entity.TrainSeatAvailability;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashSet;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class TokenServiceImpl implements ITokenService {
-    private ConcurrentHashMap<String,String> tokenToMachineMap=new ConcurrentHashMap<>();
-    private HashSet<String> registeredMachines=new HashSet<String>();
-    @Override
-    public String getBookingToken(String userId, Long trainId, LocalDate journeyStartDate, Long coachTypeId) {
-        return null;
-    }
-    private String getKey(String userId, Long trainId, LocalDate journeyStartDate, Long coachTypeId)
+
+    @Value("${advance.booking.window.days}")
+    Integer advanceBookingWindowDays;
+
+    private Integer getAdvanceBookingWindowDays()
     {
-        String keyToHash=String.valueOf(trainId)+"_"+journeyStartDate.toString()+"_"+String.valueOf(coachTypeId);
-        return keyToHash;
+        if(advanceBookingWindowDays!=null)
+            return advanceBookingWindowDays;
+
+        return Constants.DEFAULT_ADVANCE_BOOKING_WINDOW;
+    }
+    private HashMap<String, BookingSetToHandle> prefetchedBookingSetToHandle = new HashMap<>();
+    private HashMap<String,String> bookingSetKeyToMachineMap=new HashMap<>();
+
+    @Autowired
+    TrainSeatAvailabiltyRepository trainSeatAvailabiltyRepository;
+
+    private ConcurrentHashMap<String, String> tokenToMachineMap = new ConcurrentHashMap<>();
+    private HashSet<String> registeredMachines = new HashSet<String>();
+
+    @Override
+    public String getBookingToken(String userId, Long trainId, LocalDate journeyStartDate, Integer coachTypeId) {
+        Date date=getDateFromLocalDate(journeyStartDate);
+        return getKey(trainId,coachTypeId,date);
+    }
+
+    private String getKey(TrainSeatAvailability availability)
+    {
+        return String.valueOf(availability.getTrainId())+"_"+String.valueOf(availability.getCoachTypeId())+"_"+availability.getJourneyStartDate().toString();
+    }
+
+    private String getKey(Long trainId,Integer coachTypeId,Date journeyStartDate)
+    {
+        return String.valueOf(trainId)+"_"+String.valueOf(coachTypeId)+"_"+journeyStartDate.toString();
     }
 
     @Override
-    public String getEndpointToServiceToken(String token) {
-        return null;
+    public String getServiceMachineFromToken(String token) {
+        return bookingSetKeyToMachineMap.get(token);
     }
 
-    //this implementation is just a dummy implementation
+    //this implementation is just a dummy implementation.
+    //As of now all bookings are handled by a single system
     @Override
     public List<BookingSetToHandle> registerMachine(String machineName) {
-        BookingSetToHandle bookingSet1=new BookingSetToHandle();
-        BookingSetToHandle bookingSet2=new BookingSetToHandle();
-        BookingSetToHandle bookingSet3=new BookingSetToHandle();
-        ArrayList<BookingSetToHandle> bookingSetToHandleArrayList=new ArrayList<>();
-        bookingSetToHandleArrayList.add(bookingSet1);
-        bookingSetToHandleArrayList.add(bookingSet2);
-        bookingSetToHandleArrayList.add(bookingSet3);
-        return bookingSetToHandleArrayList;
+
+        List<BookingSetToHandle> bookingSetToHandleList=new ArrayList<>();
+        for(String s:prefetchedBookingSetToHandle.keySet())
+        {
+            bookingSetToHandleList.add(prefetchedBookingSetToHandle.get(s));
+            bookingSetKeyToMachineMap.put(s,machineName);
+        }
+        return bookingSetToHandleList;
     }
 
+    public void refreshBookingSetToHandle() {
+        LocalDate advanceWindowCloseDate = getDaysAfter(LocalDate.now(), getAdvanceBookingWindowDays());
+        Date endDate=getDateFromLocalDate(advanceWindowCloseDate);
+        List<TrainSeatAvailability> trainSeatAvailabilities=trainSeatAvailabiltyRepository.findAllByJourneyStartDateGreaterThanAndJourneyStartDateLessThanEqual(LocalDate.now(),advanceWindowCloseDate);
+        for(TrainSeatAvailability availability: trainSeatAvailabilities)
+        {
+            String key=getKey(availability);
+            BookingSetToHandle bookingSetToHandle=new BookingSetToHandle();
+            bookingSetToHandle.setTrainId(availability.getTrainId());
+            bookingSetToHandle.setCoachTypeId(availability.getCoachTypeId());
+            bookingSetToHandle.setJourneyDate(availability.getJourneyStartDate());
+            prefetchedBookingSetToHandle.put(key,bookingSetToHandle);
+        }
+    }
+    @PostConstruct
+    public void postConstruct() {
+       refreshBookingSetToHandle();
+    }
+
+
+    private Date getDateFromLocalDate(LocalDate localDate) {
+        ZoneId defaultZoneId = ZoneId.systemDefault();
+        return Date.from(localDate.atStartOfDay(defaultZoneId).toInstant());
+    }
+    private LocalDate getDaysAfter(LocalDate date, int daysAfter) {
+        return date.plusDays(daysAfter);
+    }
 
 }

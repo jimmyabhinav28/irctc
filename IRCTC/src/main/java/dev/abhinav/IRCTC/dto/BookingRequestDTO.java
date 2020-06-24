@@ -3,6 +3,7 @@ package dev.abhinav.IRCTC.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -22,10 +23,10 @@ public class BookingRequestDTO {
     @NotNull(message = "destination station id cannot be null")
     Long destinationStationId;
 
-    @NotNull(message = "journey date cannot be null")
-    Date journeyDate;
+    @NotBlank(message = "journey date cannot be null and must be in format yyyy-MMM-dd")
+    String journeyDate;
 
-    @NotEmpty(message = "coach class cannot be null or empty")
+    @NotNull(message = "coach class cannot be null or empty")
     Integer coachTypeId;
 
     @Size(min = 1, max = 5)
