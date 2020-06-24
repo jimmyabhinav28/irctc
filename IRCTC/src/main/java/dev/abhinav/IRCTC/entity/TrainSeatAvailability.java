@@ -11,8 +11,8 @@ import java.util.Date;
 @Setter
 @ToString
 @Entity
-@Table(name = "seat_availability")
-public class TrainAvailability extends AuditableEntity {
+@Table(name = "train_seat_availability")
+public class TrainSeatAvailability extends AuditableEntity {
     //another weak table here
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,9 +32,15 @@ public class TrainAvailability extends AuditableEntity {
     @Column(name = "window_seats_available")
     Integer windowSeatsAvailable;
 
+    @Column(name = "windows_seat_map")
+    String windowSeatsBookingMap;
+
     @Column(name = "aisle_seats_available")
     Integer aisleSeatsAvailable;
 
-    @Column(name = "coachIdentifier")
+    @Column(name = "aisle_seat_map")
+    String aisleSeatsBookingMap;
+
+    @Column(name = "coach_identifier")
     String coachIdentifier;
 }

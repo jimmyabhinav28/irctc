@@ -2,8 +2,7 @@ package dev.abhinav.IRCTC.service;
 
 import dev.abhinav.IRCTC.Constants;
 import dev.abhinav.IRCTC.dao.*;
-import dev.abhinav.IRCTC.entity.Train;
-import dev.abhinav.IRCTC.entity.TrainAvailability;
+import dev.abhinav.IRCTC.entity.TrainSeatAvailability;
 import dev.abhinav.IRCTC.entity.TrainCoachRecord;
 import dev.abhinav.IRCTC.entity.TrainScheduleRecord;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +16,6 @@ import java.time.Period;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
-
-import static java.util.Date.from;
 
 @Service
 @Slf4j
@@ -36,7 +33,7 @@ Integer advanceBookingWindowDays;
             return Constants.DEFAULT_ADVANCE_BOOKING_WINDOW;
     }
     @Autowired
-    TrainAvailabiltyRepository trainAvailabiltyRepository;
+    TrainSeatAvailabiltyRepository trainSeatAvailabiltyRepository;
 
     @Autowired
     TrainCoachRepository trainCoachRepository;
@@ -56,7 +53,7 @@ Integer advanceBookingWindowDays;
         //get day for each date
         //get all trains for each day
         //for each train create an initial availability
-        Date lastAvailbilityDate = trainAvailabiltyRepository.getMaxAvailabilityDate();
+        Date lastAvailbilityDate = trainSeatAvailabiltyRepository.getMaxAvailabilityDate();
         if(lastAvailbilityDate==null)
             lastAvailbilityDate=new Date();
         LocalDate lastAvailbilityLocalDate = convertToLocalDateViaInstant(lastAvailbilityDate);
@@ -81,8 +78,8 @@ Integer advanceBookingWindowDays;
                     {
                         for(TrainCoachRecord trainCoachRecord: trainCoachRecords)
                         {
-                            TrainAvailability trainAvailability = convertTrainCoachRecordToTrainAvailability(trainCoachRecord);
-                            trainAvailabiltyRepository.save(trainAvailability);
+                            TrainSeatAvailability trainSeatAvailability = convertTrainCoachRecordToTrainSeatAvailability(trainCoachRecord,initialAvailabilityDate);
+                            trainSeatAvailabiltyRepository.save(trainSeatAvailability);
                         }
                     }
                 }
@@ -90,7 +87,29 @@ Integer advanceBookingWindowDays;
         }
     }
 
-    
+    private TrainSeatAvailability convertTrainCoachRecordToTrainSeatAvailability(TrainCoachRecord trainCoachRecord, LocalDate initialAvailabilityDate) {
+        TrainSeatAvailability trainSeatAvailability = new TrainSeatAvailability();
+        trainSeatAvailability.setCoachTypeId(trainCoachRecord.getCoachType().getId());
+        trainSeatAvailability.setJourneyStartDate(getDateFromLocalDate(initialAvailabilityDate));
+        trainSeatAvailability.setSeatsAvailable(trainCoachRecord.getCoachType().getTotalSeats());
+        trainSeatAvailability.setAisleSeatsAvailable(trainCoachRecord.getCoachType().getAisleSeats());
+        trainSeatAvailability.setAisleSeatsBookingMap(getFullyAvailableSetMap());
+        trainSeatAvailability.setWindowSeatsAvailable(trainCoachRecord.getCoachType().getWindowSeats());
+        trainSeatAvailability.setWindowSeatsBookingMap(getFullyAvailableSetMap());
+        trainSeatAvailability.setCoachIdentifier(trainCoachRecord.getCoachIdentifier());
+        return trainSeatAvailability;
+    }
+
+
+    private String getFullyAvailableSetMap()
+    {
+        char[] map=new char[Constants.MAXIMUM_AVAILABLE_SEAT_PER_COACH_IN_ANY_COACH_CLASS];
+        for(int i=0;i<Constants.MAXIMUM_AVAILABLE_SEAT_PER_COACH_IN_ANY_COACH_CLASS;i++)
+        {
+            map[i]=Constants.AVAILABLE_SEAT_MARKER_CHARACTER;
+        }
+        return new String(map);
+    }
    /* private TrainAvailability convertTrainCoachSeatToTrainAvailability(TrainCoachSeats tcs, LocalDate initialAvailabilityDate) {
         TrainAvailability trainAvailability = new TrainAvailability();
         trainAvailability.setCoachTypeId(tcs.getCoachTypeId());

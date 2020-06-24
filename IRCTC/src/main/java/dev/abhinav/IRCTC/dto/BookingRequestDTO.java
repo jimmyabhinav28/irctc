@@ -26,7 +26,8 @@ public class BookingRequestDTO {
     Date journeyDate;
 
     @NotEmpty(message = "coach class cannot be null or empty")
-    String coachClass;
+    Integer coachTypeId;
+
     @Size(min = 1, max = 5)
     List<BerthRequestDTO> berthRequestDTOList;
 }

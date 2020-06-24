@@ -26,7 +26,7 @@ public class SchedulerActionController {
     //or in case if the server does not need to restart, this will be refreshed on a scheduled basis
     @GetMapping("/ops/prefetchSourceDestinationPairs")
     public void cachePointToPointReachabilityInfo() {
-        routeInformationService.populateRouteCache();
+        routeInformationService.populateRouteAndDistanceCache();
     }
 
     //this end point is also meant to be hit on a scheduled basis at 11:30 p.m

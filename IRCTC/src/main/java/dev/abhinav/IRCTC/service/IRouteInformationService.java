@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface IRouteInformationService {
 
-    void populateRouteCache();
+    void populateRouteAndDistanceCache();
 
     /**
      *
@@ -18,6 +18,7 @@ public interface IRouteInformationService {
      */
     public List<Train> getTrains(Long sourceStationId, Long destinationStationId, DayOfWeek dayOfWeek);
 
+    public Integer getDistanceBetweenTwoStation(Long sourceStationId, Long destinationStationId,Long trainId);
 }
 
 
