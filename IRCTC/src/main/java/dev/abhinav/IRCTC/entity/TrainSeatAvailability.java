@@ -34,4 +34,7 @@ public class TrainAvailability extends AuditableEntity {
 
     @Column(name = "aisle_seats_available")
     Integer aisleSeatsAvailable;
+
+    @Column(name = "coachIdentifier")
+    String coachIdentifier;
 }
